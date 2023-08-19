@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["jest.config.js", "./src/**/*.spec.ts", "./src/**/*.test.ts"]
+}
