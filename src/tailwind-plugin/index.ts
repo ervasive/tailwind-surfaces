@@ -1,11 +1,12 @@
-import * as plugin from "tailwindcss/plugin";
+import * as plugin from 'tailwindcss/plugin';
+import { PluginOptions } from './types';
 
 /**
  * Tailwind surfaces
  *
  * TODO: add comprehensive description
  */
-export const tailwindSurfaces = plugin.withOptions(
+export const tailwindSurfaces = plugin.withOptions<PluginOptions>(
   /**
    * Create base styles for configuration options, theme, properties applied to
    * all `surface` selectors
@@ -14,12 +15,13 @@ export const tailwindSurfaces = plugin.withOptions(
    */
   (options) => {
     return ({ addComponents }) => {
+      console.log(options);
       addComponents({
         [`:root`]: {
           content: `"test 2222"`,
         },
 
-        ".surface-test": {
+        '.surface-test': {
           content: `"surface-test"`,
         },
       });
