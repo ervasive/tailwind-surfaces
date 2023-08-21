@@ -1,11 +1,11 @@
 import { describe, it, expect } from '@jest/globals';
 import { SafeParseError, SafeParseSuccess, ZodIssueCode } from 'zod';
-import { SurfaceTokens } from '../types';
-import { surfaceTokensSchema } from './surface-tokens';
+import { stylesSchema } from './styles';
+import { Token } from '../types';
 
-describe('surfaceTokensSchema', () => {
+describe('stylesSchema', () => {
   it('should catch error if no value provided', () => {
-    const result = surfaceTokensSchema.safeParse(undefined);
+    const result = stylesSchema.safeParse(undefined);
 
     expect(result.success).toBe(false);
 
@@ -14,11 +14,11 @@ describe('surfaceTokensSchema', () => {
     expect(error.issues.length).toBe(1);
     expect(error.issues[0].path).toEqual([]);
     expect(error.issues[0].code).toBe(ZodIssueCode.invalid_type);
-    expect(error.issues[0].message).toMatch(/tokens object is required/i);
+    expect(error.issues[0].message).toMatch(/styles object is required/i);
   });
 
   it('should catch error if invalid value provided', () => {
-    const result = surfaceTokensSchema.safeParse(5);
+    const result = stylesSchema.safeParse(5);
 
     expect(result.success).toBe(false);
 
@@ -27,19 +27,19 @@ describe('surfaceTokensSchema', () => {
     expect(error.issues.length).toBe(1);
     expect(error.issues[0].path).toEqual([]);
     expect(error.issues[0].code).toBe(ZodIssueCode.invalid_type);
-    expect(error.issues[0].message).toMatch(/invalid tokens/i);
+    expect(error.issues[0].message).toMatch(/invalid styles/i);
   });
 
   it('should return validated input', () => {
     const input = {
-      token: 'value',
-      second: ['value', 'value-2'],
+      color: 'value',
+      fill: ['value', 'value-2'],
     };
-    const result = surfaceTokensSchema.safeParse(input);
+    const result = stylesSchema.safeParse(input);
 
     expect(result.success).toBe(true);
 
-    const data = (result as SafeParseSuccess<SurfaceTokens>).data;
+    const data = (result as SafeParseSuccess<Record<string, Token>>).data;
 
     expect(data).toEqual(input);
   });
