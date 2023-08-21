@@ -55,7 +55,7 @@ export interface Surface<TokensList extends string[] = string[]> {
   /**
    * Token values assigned to a surface
    */
-  tokens?: Partial<SurfaceTokens<TokensList>>;
+  tokens: Partial<SurfaceTokens<TokensList>>;
 
   /**
    * TODO: add description
@@ -124,4 +124,16 @@ export interface PluginOptions {
    * TODO: write comprehensive description
    */
   theme: Theme;
+}
+
+/**
+ * TODO: write desc
+ */
+export interface ProcessedSurface {
+  path: string[];
+  extends?: string;
+  properties: {
+    light: Map<string, string>;
+    dark: Map<string, string>;
+  };
 }
