@@ -1,8 +1,8 @@
 import * as plugin from 'tailwindcss/plugin';
-import { PluginOptions } from './types';
+import { IS_DEV } from '../constants';
 import { ProcessedOptionsResult, processOptions } from './lib/process-options';
-import { IS_DEV, IS_TEST } from '../constants';
 import { resolveRootSurface } from './lib/resolve-root-surface';
+import { PluginOptions } from './types';
 
 let validated: ProcessedOptionsResult | undefined;
 
@@ -25,7 +25,13 @@ export const tailwindSurfaces = plugin.withOptions<PluginOptions>(
       }
 
       if (validated.success) {
-        const { surfaces, varsPrefix } = validated.data;
+        const { surfaces, varsPrefix, classnamesPrefix } = validated.data;
+
+        addComponents({
+          ':tws-config': {
+            content: JSON.stringify({ classnamesPrefix }),
+          },
+        });
 
         surfaces.forEach((item) => {
           const rootProps: Record<string, string> = {};
@@ -41,15 +47,19 @@ export const tailwindSurfaces = plugin.withOptions<PluginOptions>(
             }
           }
 
+          const itemSelector = classnamesPrefix
+            ? `.${classnamesPrefix}${item.path.join(` .${classnamesPrefix}`)}`
+            : `.${item.path.join(' .')}`;
+
           addComponents({
-            ['.tws-' + item.path.join(' .tws-')]: {
+            [itemSelector]: {
               ...Object.fromEntries(item.properties.entries()),
               ...rootProps,
             },
           });
         });
       } else {
-        if (IS_DEV || IS_TEST) {
+        if (IS_DEV) {
           console.error(validated.error.message);
           return;
         } else {

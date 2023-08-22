@@ -6,12 +6,16 @@ import { themeSchema } from '.';
 export const pluginOptionsSchema: ZodType<PluginOptions> = z.object(
   {
     varsPrefix: z
-      .string({ invalid_type_error: 'must be a non-empty string' })
+      .string({ invalid_type_error: 'if set must be a non-empty string' })
       .min(3)
       .default(VARS_PREFIX),
     classnamesPrefix: z
-      .string({ invalid_type_error: 'must be a non-empty string' })
-      .min(3)
+      .union([z.string().min(3), z.null()], {
+        errorMap: () => ({
+          message:
+            'if set must be either a non-empty string or null (to disable class names prefix)',
+        }),
+      })
       .default(CLASSNAMES_PREFIX),
     theme: themeSchema,
   },

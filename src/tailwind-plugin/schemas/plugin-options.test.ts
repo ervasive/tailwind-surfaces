@@ -65,8 +65,23 @@ describe('pluginOptionsSchema', () => {
 
     expect(error.issues.length).toBe(2);
     expect(error.issues[0].path).toEqual(['classnamesPrefix']);
-    expect(error.issues[0].code).toBe(ZodIssueCode.invalid_type);
-    expect(error.issues[0].message).toMatch(/must be a non-empty string/i);
+    expect(error.issues[0].code).toBe(ZodIssueCode.invalid_union);
+    expect(error.issues[0].message).toMatch(
+      /if set must be either a non-empty string or null/i,
+    );
+  });
+
+  it('should assign null value for "classnamesPrefix"', () => {
+    const result = pluginOptionsSchema.safeParse({
+      classnamesPrefix: null,
+      theme: { tokens: {}, surfaces: {} },
+    });
+
+    expect(result.success).toBe(true);
+
+    const data = (result as SafeParseSuccess<PluginOptions>).data;
+
+    expect(data.classnamesPrefix).toBe(null);
   });
 
   it('should assign default value for "classnamesPrefix" if no value provided', () => {
@@ -81,7 +96,7 @@ describe('pluginOptionsSchema', () => {
     expect(data.classnamesPrefix).toBe(CLASSNAMES_PREFIX);
   });
 
-  it.only('should return validated input', () => {
+  it('should return validated input', () => {
     const input = {
       varsPrefix: 'vars-prefix-value',
       classnamesPrefix: 'classnames-prefix-value',

@@ -115,7 +115,7 @@ export interface PluginOptions {
    * theme.surfaces.base => .base { ... }
    * ```
    */
-  classnamesPrefix?: string;
+  classnamesPrefix?: string | null;
 
   /**
    * User defined theme.

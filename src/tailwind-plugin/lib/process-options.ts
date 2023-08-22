@@ -1,7 +1,6 @@
 import { PluginOptions, ProcessedSurface, Result } from '../types';
-import { formatSchemaErrors } from './format-schema-errors';
 import { pluginOptionsSchema } from '../schemas';
-import { CLASSNAMES_PREFIX, VARS_PREFIX } from '../../constants';
+import { formatSchemaErrors } from './format-schema-errors';
 import { buildProcessedSurfacesMap } from './build-processed-surfaces-map';
 
 /**
@@ -10,7 +9,7 @@ import { buildProcessedSurfacesMap } from './build-processed-surfaces-map';
  */
 export type ProcessedOptionsResult = Result<{
   varsPrefix: string;
-  classnamesPrefix: string;
+  classnamesPrefix?: string | null;
   tokens: string[];
   surfaces: Map<string, ProcessedSurface>;
 }>;
@@ -46,8 +45,8 @@ export function processOptions(options: PluginOptions): ProcessedOptionsResult {
   const result: ProcessedOptionsResult = {
     success: true,
     data: {
-      varsPrefix: varsPrefix || VARS_PREFIX,
-      classnamesPrefix: classnamesPrefix || CLASSNAMES_PREFIX,
+      varsPrefix: varsPrefix!,
+      classnamesPrefix: classnamesPrefix,
       tokens: Object.keys(theme.tokens),
       surfaces: surfacesResult.success ? surfacesResult.data : new Map(),
     },

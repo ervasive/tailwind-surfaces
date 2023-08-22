@@ -22,7 +22,7 @@ describe('formatSchemaErrors', () => {
       });
     } catch (e) {
       expect(formatSchemaErrors(e as ZodError)).toMatch(
-        /varsPrefix - must be a non-empty string/i,
+        /varsPrefix - if set must be a non-empty string/i,
       );
     }
   });
@@ -35,7 +35,7 @@ describe('formatSchemaErrors', () => {
       });
     } catch (e) {
       expect(formatSchemaErrors(e as ZodError)).toMatch(
-        /classnamesPrefix - must be a non-empty string/i,
+        /classnamesPrefix - if set must be either a non-empty string or null/i,
       );
     }
   });
