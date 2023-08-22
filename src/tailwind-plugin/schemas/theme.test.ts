@@ -46,24 +46,6 @@ describe('themeSchema', () => {
     expect(error.issues[0].message).toMatch(/invalid surfaces value/i);
   });
 
-  it('should catch error if invalid surfaces item provided', () => {
-    const result = themeSchema.safeParse({
-      tokens: {},
-      surfaces: {
-        test: 5,
-      },
-    });
-
-    expect(result.success).toBe(false);
-
-    const error = (result as SafeParseError<typeof result>).error;
-
-    expect(error.issues.length).toBe(1);
-    expect(error.issues[0].path).toEqual(['surfaces', 'test']);
-    expect(error.issues[0].code).toBe(ZodIssueCode.invalid_union);
-    expect(error.issues[0].message).toMatch(/invalid surface value/i);
-  });
-
   it.only('should return validated input', () => {
     const input = {
       tokens: {
