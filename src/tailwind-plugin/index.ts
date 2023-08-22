@@ -1,5 +1,10 @@
 import * as plugin from 'tailwindcss/plugin';
 import { PluginOptions } from './types';
+import { ProcessedOptionsResult, processOptions } from './lib/process-options';
+import { IS_DEV, IS_TEST } from '../constants';
+import { resolveRootSurface } from './lib/resolve-root-surface';
+
+let validated: ProcessedOptionsResult | undefined;
 
 /**
  * Tailwind surfaces
@@ -15,16 +20,42 @@ export const tailwindSurfaces = plugin.withOptions<PluginOptions>(
    */
   (options) => {
     return ({ addComponents }) => {
-      console.log(options);
-      addComponents({
-        [`:root`]: {
-          content: `"test 2222"`,
-        },
+      if (!validated) {
+        validated = processOptions(options);
+      }
 
-        '.surface-test': {
-          content: `"surface-test"`,
-        },
-      });
+      if (validated.success) {
+        const { surfaces, varsPrefix } = validated.data;
+
+        surfaces.forEach((item) => {
+          const rootProps: Record<string, string> = {};
+
+          if (item.extends) {
+            const rootItem = resolveRootSurface(item.extends, surfaces);
+
+            if (rootItem) {
+              rootItem.properties.forEach((value, name) => {
+                rootProps[name.replace(varsPrefix, `${varsPrefix}root-`)] =
+                  value;
+              });
+            }
+          }
+
+          addComponents({
+            ['.tws-' + item.path.join(' .tws-')]: {
+              ...Object.fromEntries(item.properties.entries()),
+              ...rootProps,
+            },
+          });
+        });
+      } else {
+        if (IS_DEV || IS_TEST) {
+          console.error(validated.error.message);
+          return;
+        } else {
+          throw validated.error;
+        }
+      }
     };
   },
   /**
@@ -35,7 +66,27 @@ export const tailwindSurfaces = plugin.withOptions<PluginOptions>(
    *
    * @returns Extended theme
    */
-  () => {
-    return {};
+  (options) => {
+    if (!validated) {
+      validated = processOptions(options);
+    }
+    if (validated.success) {
+      const { tokens, varsPrefix } = validated.data;
+      const colors: Record<string, string> = {};
+
+      tokens.forEach((token) => {
+        colors[token] = `var(--${varsPrefix}${token})`;
+      });
+
+      return {
+        theme: {
+          extend: {
+            colors,
+          },
+        },
+      };
+    } else {
+      return {};
+    }
   },
 );

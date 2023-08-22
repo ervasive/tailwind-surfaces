@@ -6,8 +6,8 @@
  * @see https://imhoff.blog/posts/using-results-in-typescript
  */
 export type Result<T, E = Error> =
-  | { ok: true; value: T }
-  | { ok: false; error: E };
+  | { success: true; data: T }
+  | { success: false; error: E };
 
 /**
  * Utility type for converting list of strings into an object where the
@@ -132,8 +132,5 @@ export interface PluginOptions {
 export interface ProcessedSurface {
   path: string[];
   extends?: string;
-  properties: {
-    light: Map<string, string>;
-    dark: Map<string, string>;
-  };
+  properties: Map<string, string>;
 }
