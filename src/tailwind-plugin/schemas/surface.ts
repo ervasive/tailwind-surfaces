@@ -1,10 +1,12 @@
-import { type ZodType, z } from 'zod';
-import { stylesSchema } from './styles';
-import { surfaceTokensSchema } from './surface-tokens';
-import type { Surface } from '../types';
+import { ZodType, z } from 'zod';
+import { Surface } from '../types';
+import { tokenSchema } from './token';
 
 export const surfaceSchema: ZodType<Surface> = z.object({
+  tokens: z.record(tokenSchema),
   extends: z.string().optional(),
-  tokens: surfaceTokensSchema,
-  styles: stylesSchema.optional(),
+  styles: z.record(tokenSchema).optional(),
+  children: z
+    .record(z.union([z.record(tokenSchema), z.lazy(() => surfaceSchema)]))
+    .optional(),
 });

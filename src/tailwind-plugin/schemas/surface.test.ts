@@ -33,6 +33,7 @@ describe('surfaceSchema', () => {
 
   it('should catch error if invalid "tokens" provided', () => {
     const result = surfaceSchema.safeParse({
+      extends: 'value',
       tokens: 5,
     });
 
@@ -47,8 +48,9 @@ describe('surfaceSchema', () => {
 
   it('should catch error if invalid "styles" provided', () => {
     const result = surfaceSchema.safeParse({
-      styles: 5,
+      extends: 'value',
       tokens: {},
+      styles: 5,
     });
 
     expect(result.success).toBe(false);
@@ -60,6 +62,40 @@ describe('surfaceSchema', () => {
     expect(error.issues[0].code).toBe(ZodIssueCode.invalid_type);
   });
 
+  it('should catch error if invalid "children" provided', () => {
+    const result = surfaceSchema.safeParse({
+      extends: 'value',
+      tokens: {},
+      styles: {},
+      children: 5,
+    });
+
+    expect(result.success).toBe(false);
+
+    const error = (result as SafeParseError<typeof result>).error;
+
+    expect(error.issues.length).toBe(1);
+    expect(error.issues[0].path).toEqual(['children']);
+    expect(error.issues[0].code).toBe(ZodIssueCode.invalid_type);
+  });
+
+  it('should catch error if invalid "children.item" provided', () => {
+    const result = surfaceSchema.safeParse({
+      extends: 'value',
+      tokens: {},
+      styles: {},
+      children: { child: 5 },
+    });
+
+    expect(result.success).toBe(false);
+
+    const error = (result as SafeParseError<typeof result>).error;
+
+    expect(error.issues.length).toBe(1);
+    expect(error.issues[0].path).toEqual(['children', 'child']);
+    expect(error.issues[0].code).toBe(ZodIssueCode.invalid_union);
+  });
+
   it('should return validated input', () => {
     const input = {
       extends: 'base',
@@ -68,6 +104,17 @@ describe('surfaceSchema', () => {
       },
       tokens: {
         surface: 'green',
+      },
+      children: {
+        one: {
+          surface: 'orange',
+        },
+        two: {
+          extends: 'value',
+          tokens: {
+            surface: 'brown',
+          },
+        },
       },
     };
     const result = surfaceSchema.safeParse(input);

@@ -1,15 +1,4 @@
 /**
- * Result represent the result of an operation that can either succeed or fail.
- * If the operation succeeds, its result represents a value (or non-value). If
- * it fails, its result represents an error.
- *
- * @see https://imhoff.blog/posts/using-results-in-typescript
- */
-export type Result<T, E = Error> =
-  | { success: true; data: T }
-  | { success: false; error: E };
-
-/**
  * Utility type for converting list of strings into an object where the
  * properties key names are generated from the given list
  */
@@ -36,8 +25,10 @@ export type Token = string | [string, string];
 /**
  * Record of token name to token value
  */
-export type SurfaceTokens<TokensList extends string[] = string[]> =
-  ObjectFromList<TokensList, Token>;
+export type Tokens<TokensList extends string[] = string[]> = ObjectFromList<
+  TokensList,
+  Token
+>;
 
 /**
  * Theme surface
@@ -55,7 +46,7 @@ export interface Surface<TokensList extends string[] = string[]> {
   /**
    * Token values assigned to a surface
    */
-  tokens: Partial<SurfaceTokens<TokensList>>;
+  tokens: Partial<Tokens<TokensList>>;
 
   /**
    * TODO: add description
@@ -65,9 +56,7 @@ export interface Surface<TokensList extends string[] = string[]> {
   /**
    * TODO: add description
    */
-  children?:
-    | 'inherit'
-    | Record<string, Surface<TokensList> | SurfaceTokens<TokensList>>;
+  children?: Record<string, Surface<TokensList> | Partial<Tokens<TokensList>>>;
 }
 
 /**
@@ -77,17 +66,17 @@ export interface Theme<TokensList extends string[] = string[]> {
   /**
    * Theme tokens
    */
-  tokens: SurfaceTokens<TokensList>;
+  tokens: Tokens<TokensList>;
 
   /**
    * Default styles applied to theme root and its surfaces
    */
-  styles?: Partial<CSSTokens>;
+  styles: Partial<CSSTokens>;
 
   /**
    *  Theme surfaces
    */
-  surfaces: Record<string, Surface<TokensList> | SurfaceTokens<TokensList>>;
+  surfaces: Record<string, Tokens<TokensList> | Surface<TokensList>>;
 }
 
 /**
@@ -115,7 +104,7 @@ export interface PluginOptions {
    * theme.surfaces.base => .base { ... }
    * ```
    */
-  classnamesPrefix?: string | null;
+  classnamesPrefix?: string;
 
   /**
    * User defined theme.

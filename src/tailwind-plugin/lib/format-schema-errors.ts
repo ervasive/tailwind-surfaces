@@ -17,18 +17,11 @@ export function formatSchemaErrors(error: ZodError): string {
     }
 
     if (iss.code === ZodIssueCode.invalid_union) {
-      messages.push(`${iss.path.join('.')} - ${iss.message.toLowerCase()}`);
-
-      iss.unionErrors.forEach(({ issues }) => {
-        issues.forEach(({ path, message }) => {
-          messages.push(`${path.join('.')} - ${message.toLowerCase()}`);
-        });
-      });
-
+      messages.push(`${iss.path.join('.')} - ${iss.message}`);
       return;
     }
 
-    messages.push(`${iss.path.join('.')} - ${iss.message.toLowerCase()}`);
+    messages.push(`${iss.path.join('.')} - ${iss.message}`);
   });
 
   return `[tailwind-surfaces] invalid options:\n- ${messages.join('\n- ')}`;
